@@ -53,6 +53,7 @@ public class Level {
 	private int mapWidth; // The map array width.
 	private int mapHeight; // The map array height.
 	private int[][] map; // The map array. (height, width)
+	private int[][] cachedMap;
 	private int tileSize; // The tileSize. Preferably 32.
 	private ArrayList<Rectangle2D.Double> barrierCollisionBoxes; // The
 																	// arraylist
@@ -67,6 +68,7 @@ public class Level {
 																	// boxes.
 	private ArrayList<Gold> goldObjects; // The arraylist of Gold objects.
 	private HashMap<Integer, BufferedImage> images; // Hashmap of tile images.
+	private boolean init = true;
 
 	/**
 	 * Constructs a Level object with given tileSize that searches for a
@@ -212,6 +214,7 @@ public class Level {
 			this.mapHeight = Integer.parseInt(imageReader.readLine());
 
 			this.map = new int[this.mapHeight][this.mapWidth];
+			this.cachedMap = new int[this.mapHeight][this.mapWidth];
 
 			for (int r = 0; r < this.map.length; r++) {
 				// Get line of numbers and spaces.
@@ -334,9 +337,13 @@ public class Level {
 		for (int r = 0; r < this.map.length; r++) {
 			for (int c = 0; c < this.map[r].length; c++) {
 				currentPosition = this.map[r][c];
-				drawTileImage(currentPosition, r, c, g);
+				if (this.cachedMap[r][c] != currentPosition || this.init) {
+					drawTileImage(currentPosition, r, c, g);
+					this.cachedMap[r][c] = currentPosition;
+				}
 			}
 		}
+		this.init = false;
 		g.dispose();
 		// draw cached tiles
 		g2.drawImage(img, 0, 0, img.getWidth(), img.getHeight(), null);
